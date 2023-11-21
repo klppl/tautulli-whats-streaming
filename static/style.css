@@ -1,0 +1,79 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    color: #33ff33;
+    background-color: black;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px; /* Adjust base font size */
+}
+
+.matrix-terminal {
+    padding: 20px;
+    max-width: 800px; /* Set a max-width for better readability */
+    margin: 0 auto; /* Center the content */
+}
+
+.matrix-terminal h1 {
+    font-size: 48px; /* You can adjust the size as needed */
+}
+
+.stream-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.stream-list li {
+    margin-bottom: 10px;
+    line-height: 1.5; /* Increase line spacing for better readability */
+}
+
+.server-name {
+    font-weight: bold;
+}
+
+.stream-title {
+    color: #99ff99;
+}
+
+.stream-state {
+    color: #ff3333;
+}
+
+.blink-cursor {
+    color: #33ff33;
+    animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px; /* Adjust the height as needed */
+    background-color: #ccc; /* Background color of the progress bar */
+    margin-top: 10px; /* Adjust the margin as needed for spacing */
+    border-radius: 5px; /* Add rounded corners to the progress bar */
+    overflow: hidden; /* Ensure the text doesn't overflow the progress bar */
+    position: relative; /* Added to provide a positioning context for the text */
+}
+
+.progress {
+    height: 100%;
+    background-color: #4caf50; /* Color of the progress */
+    transition: width 0.3s; /* Smooth transition for the progress width */
+    width: {{ stream.progress_percent }}%; /* Adjust the width for progress */
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 5px; /* Adjust the left position to control the text's starting point */
+    transform: translateY(-50%);
+    color: #fff; /* Text color */
+    font-weight: bold;
+}
+
+
