@@ -1,0 +1,24 @@
+{% for server, streams in data.items() %}
+    {% if streams|length > 0 %}
+        <h2>{{server}} ({{ streams|length }})</h2>
+
+        <ul>
+            {% for stream_info in streams %}
+                <li>
+                    {{ stream_info['user'] }}
+                    {% if 'playing' in stream_info['state'] %}
+                        <i class="fas fa-play"></i>
+                    {% elif 'paused' in stream_info['state'] %}
+                        <i class="fas fa-pause"></i>
+                    {% endif %}
+                    <span class="stream-title">{{stream_info['title']}}</span>
+                    [<span class="stream-decision">{{stream_info['transcode_decision']}}</span>]
+                    <div class="progress-bar">
+                        <div class="progress" style="width: {{ stream_info['progress_percent'] }}%;"></div>
+                        <span class="progress-text">{{ stream_info['progress_percent'] }}%</span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}

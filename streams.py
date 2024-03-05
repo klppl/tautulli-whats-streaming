@@ -1,4 +1,5 @@
 from flask import Flask, render_template, Response
+from jinja2 import Environment, FileSystemLoader
 import requests
 import json
 from waitress import serve
@@ -33,39 +34,19 @@ def generate_stream_updates():
                     }
                     data[name].append(stream_info)  # Append the stream to the server's list
 
-        # Yield the stream data as SSE events
-        yield f"data: {json.dumps(data)}\n\n"
+        # Using Jinja2 because we do not care about flask context
+        template_env = Environment(loader=FileSystemLoader('templates'))
+        template = template_env.get_template('streams_status.html')
+        output = template.render(data=data).replace('\n', '')
+        yield f"data: {output}\n\n"
 
 @app.route('/')
 def index():
-    streams_by_server = {}  # Create a dictionary to group streams by server
-    for server in TAUTULLI_SERVERS:
-        url, api_key, name = server['url'], server['api_key'], server['name']
-        streams = get_current_streams(url, api_key)
-        if streams and streams['response']['result'] == 'success':
-            sessions = streams['response']['data']['sessions']
-            streams_by_server[name] = []  # Initialize an empty list for the server
-            for session in sessions:
-                stream_info = {
-                    'user': session.get('user', 'Unknown User'),
-                    'title': session.get('full_title', 'Unknown Title'),
-                    'state': session.get('state', 'Unknown State'),
-                    'transcode_decision': session.get('transcode_decision', 'Unknown Transcode Decision'),
-                    'progress_percent': session.get('progress_percent', 0)
-                }
-                streams_by_server[name].append(stream_info)  # Append the stream to the server's list
-    return render_template('index.html', streams_by_server=streams_by_server)
+    return render_template('index.html')
 
 @app.route('/stream_updates')
 def stream_updates():
     return Response(generate_stream_updates(), content_type='text/event-stream')
-
-@app.route('/service-worker.js')
-def sw():
-    response = app.send_static_file('service-worker.js')
-    # Important: Avoid caching the service worker for it to update correctly
-    response.headers['Cache-Control'] = 'no-cache'
-    return response
 
 if __name__ == '__main__':
     serve(app, host='0.0.0.0', port=5000)
