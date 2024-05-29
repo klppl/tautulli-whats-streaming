@@ -7,54 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Include Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
 </head>
 <body>
+
     <div class="matrix-terminal">
         <h1>teh streams</h1>
         <div class="stream-list">
-            <ul id="stream-list"></ul>
+            <div hx-ext="sse" sse-connect="stream_updates" sse-swap="message"></div>
         </div>
     </div>
-    <script src="static/script.js"></script>
-    <script>
-        function updateStreamList(data) {
-            const streamList = document.getElementById('stream-list');
-            streamList.innerHTML = '';
-
-            for (const server in data) {
-                if (data.hasOwnProperty(server)) {
-                    const streams = data[server];
-                    const serverHeader = document.createElement('h2');
-                    serverHeader.textContent = server + ' (' + streams.length + ')';
-                    streamList.appendChild(serverHeader);
-
-                    const streamUl = document.createElement('ul');
-                    streams.forEach((stream) => {
-                        const streamLi = document.createElement('li');
-                        streamLi.innerHTML = `
-                            ${stream.user}
-                            ${stream.state === 'playing' ? '<i class="fas fa-play"></i>' : ''}
-                            ${stream.state === 'paused' ? '<i class="fas fa-pause"></i>' : ''}
-                            <span class="stream-title">${stream.title}</span>
-                            [<span class="stream-decision">${stream.transcode_decision}</span>]
-                            <div class="progress-bar">
-                                <div class="progress" style="width: ${stream.progress_percent}%;"></div>
-                                <span class="progress-text">${stream.progress_percent}%</span>
-                            </div>
-                        `;
-                        streamUl.appendChild(streamLi);
-                    });
-
-                    streamList.appendChild(streamUl);
-                }
-            }
-        }
-
-        const streamUpdates = new EventSource('/stream_updates');
-        streamUpdates.addEventListener('message', (event) => {
-            const data = JSON.parse(event.data);
-            updateStreamList(data);
-        });
-    </script>
+    
 </body>
 </html>
